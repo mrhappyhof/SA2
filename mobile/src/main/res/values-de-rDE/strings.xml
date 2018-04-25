@@ -5,5 +5,16 @@
     <string name="action_settings">Einstellung</string>
     <string name="tab_search">Suchen</string>
     <string name="tab_insert">Einfügen</string>
-    <string name="tab_Users">Nurtersteuerung</string>
+    <string name="tab_Users">Nutzersteuerung</string>
+    <string name="LoginInfo">Bitte geben sie ihre Nutzerdaten ein.</string>
+    <string name="ServerUrl">Server URL</string>
+    <string name="Database_txt">Datenbank</string>
+    <string name="Pass">Passwort</string>
+    <string name="User">Benutzername</string>
+    <string name="Connect">Verbinden</string>
+    <string name="ConnectionState">Verbindungszustand</string>
+    <string name="ConnectedTo">Verbunden mit</string>
+    <string name="Disconnect">Verbindung trennen</string>
+    <string name="StoreLoginData">Anmeldedaten speichern</string>
+    <string name="ConnectedTotxt">Verbunden mit:</string>
 </resources>

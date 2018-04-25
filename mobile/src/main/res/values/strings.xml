@@ -6,4 +6,17 @@
     <string name="tab_search">Search</string>
     <string name="tab_insert">Insert</string>
     <string name="tab_Users">Users</string>
+    <string name="title_activity_login" translatable="false">Login</string>
+    <string name="LoginInfo">Please enter yout Login data.</string>
+    <string name="ServerUrl">Server URL</string>
+    <string name="Database_txt">Database</string>
+    <string name="Pass">Password</string>
+    <string name="User">Username</string>
+    <string name="Connect">Connect</string>
+    <string name="ConnectionState">Connection state</string>
+    <string name="ConnectedTo">Connected to</string>
+    <string name="Disconnect">Disconnect</string>
+    <string name="StoreLoginData">Store logindata</string>
+    <string name="ConnectedTotxt">Connected to:</string>
+
 </resources>
