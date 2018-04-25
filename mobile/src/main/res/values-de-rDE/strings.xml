@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LagerApp</string>
+    <string name="tab_connection">Verbindung</string>
+    <string name="action_settings">Einstellung</string>
+    <string name="tab_search">Suchen</string>
+    <string name="tab_insert">Einfügen</string>
+    <string name="tab_Users">Nurtersteuerung</string>
+</resources>
