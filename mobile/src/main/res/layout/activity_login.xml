@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+    <TextView
+        android:id="@+id/LoginInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/LoginInfo"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+    <EditText
+        android:id="@+id/DB_URL_ipt"
+        android:layout_width="@dimen/widthInput"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_below="@+id/LoginInfo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="9dp"
+        android:ems="10"
+        android:hint="@string/ServerUrl"
+        android:inputType="textUri"
+        android:selectAllOnFocus="false"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+
+    <EditText
+        android:id="@+id/Database_input"
+        android:layout_width="@dimen/widthInput"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_below="@+id/DB_URL_ipt"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
+        android:hint="@string/Database_txt"
+        android:inputType="textPersonName"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+
+    <EditText
+        android:id="@+id/USER_Input"
+        android:layout_width="@dimen/widthInput"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_alignStart="@+id/Database_input"
+        android:layout_below="@+id/Database_input"
+        android:layout_marginTop="13dp"
+        android:ems="10"
+        android:hint="@string/User"
+        android:inputType="textUri"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+
+    <EditText
+        android:id="@+id/editText6"
+        android:layout_width="@dimen/widthInput"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_alignStart="@+id/USER_Input"
+        android:layout_below="@+id/USER_Input"
+        android:layout_marginTop="14dp"
+        android:ems="10"
+        android:hint="@string/Pass"
+        android:inputType="textPassword"
+        android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+
+    <Button
+        android:id="@+id/btn_Connect"
+        android:layout_width="@dimen/widthInput"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="191dp"
+        android:onClick="btnConnect"
+        android:text="@string/Connect" />
+
+    <CheckBox
+        android:id="@+id/StoreLoginData"
+        android:layout_width="318dp"
+        android:layout_height="@dimen/hight_Input"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/DB_URL_ipt"
+        android:layout_marginTop="228dp"
+        android:text="CheckBox" />
+</RelativeLayout>
+
