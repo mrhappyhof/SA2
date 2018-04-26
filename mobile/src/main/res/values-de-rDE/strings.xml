@@ -17,4 +17,5 @@
     <string name="Disconnect">Verbindung trennen</string>
     <string name="StoreLoginData">Anmeldedaten speichern</string>
     <string name="ConnectedTotxt">Verbunden mit:</string>
+    <string name="title_activity_login">Anmeldung</string>
 </resources>

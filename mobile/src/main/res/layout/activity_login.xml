@@ -14,7 +14,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <EditText
-        android:id="@+id/DB_URL_ipt"
+        android:id="@+id/DB_URL_Input"
         android:layout_width="@dimen/widthInput"
         android:layout_height="@dimen/hight_Input"
         android:layout_below="@+id/LoginInfo"
@@ -27,10 +27,10 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
 
     <EditText
-        android:id="@+id/Database_input"
+        android:id="@+id/Database_Input"
         android:layout_width="@dimen/widthInput"
         android:layout_height="@dimen/hight_Input"
-        android:layout_below="@+id/DB_URL_ipt"
+        android:layout_below="@+id/DB_URL_Input"
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="@string/Database_txt"
@@ -41,8 +41,8 @@
         android:id="@+id/USER_Input"
         android:layout_width="@dimen/widthInput"
         android:layout_height="@dimen/hight_Input"
-        android:layout_alignStart="@+id/Database_input"
-        android:layout_below="@+id/Database_input"
+        android:layout_alignStart="@+id/Database_Input"
+        android:layout_below="@+id/Database_Input"
         android:layout_marginTop="13dp"
         android:ems="10"
         android:hint="@string/User"
@@ -50,7 +50,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
 
     <EditText
-        android:id="@+id/editText6"
+        android:id="@+id/PASS_Input"
         android:layout_width="@dimen/widthInput"
         android:layout_height="@dimen/hight_Input"
         android:layout_alignStart="@+id/USER_Input"
@@ -76,8 +76,8 @@
         android:layout_width="318dp"
         android:layout_height="@dimen/hight_Input"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/DB_URL_ipt"
+        android:layout_alignStart="@+id/DB_URL_Input"
         android:layout_marginTop="228dp"
-        android:text="CheckBox" />
+        android:text="@string/StoreLoginData" />
 </RelativeLayout>
 
