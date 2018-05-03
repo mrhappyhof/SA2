@@ -11,13 +11,77 @@
 
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/i_ip_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="11dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="@string/name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/i_ip_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="71dp"
+        android:ems="10"
+        android:hint="@string/group"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/i_ip_place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="136dp"
+        android:ems="10"
+        android:hint="@string/place"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/i_ip_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="198dp"
+        android:ems="10"
+        android:hint="@string/state"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/i_ip_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="203dp"
+        android:ems="10"
+        android:hint="@string/comment"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/i_ip_img"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/i_ip_name"
+        android:layout_marginBottom="140dp"
+        android:ems="10"
+        android:hint="@string/img"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="41dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/i_ip_img"
+        android:layout_toEndOf="@+id/i_ip_img"
+        android:background="@android:drawable/ic_menu_camera" />
+
 </RelativeLayout>

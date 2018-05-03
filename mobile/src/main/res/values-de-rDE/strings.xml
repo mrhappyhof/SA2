@@ -18,4 +18,10 @@
     <string name="StoreLoginData">Anmeldedaten speichern</string>
     <string name="ConnectedTotxt">Verbunden mit:</string>
     <string name="title_activity_login">Anmeldung</string>
+    <string name="name">Name</string>
+    <string name="group">Gruppe</string>
+    <string name="place">Lagerort</string>
+    <string name="state">Zustand</string>
+    <string name="comment">Anmerkung</string>
+    <string name="img">Bild</string>
 </resources>

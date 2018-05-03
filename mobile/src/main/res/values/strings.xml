@@ -18,5 +18,11 @@
     <string name="Disconnect">Disconnect</string>
     <string name="StoreLoginData">Store logindata</string>
     <string name="ConnectedTotxt">Connected to:</string>
+    <string name="name">name</string>
+    <string name="group">group</string>
+    <string name="place">place</string>
+    <string name="state">state</string>
+    <string name="comment">comment</string>
+    <string name="img">image</string>
 
 </resources>
