@@ -6,7 +6,7 @@
     <string name="tab_search">Search</string>
     <string name="tab_insert">Insert</string>
     <string name="tab_Users">Users</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">SortingApp</string>
     <string name="LoginInfo">Please enter yout Login data.</string>
     <string name="ServerUrl">Server URL</string>
     <string name="Database_txt">Database</string>
@@ -24,5 +24,7 @@
     <string name="state">state</string>
     <string name="comment">comment</string>
     <string name="img">image</string>
+    <string name="placeholder">***********</string>
+    <string name="selectedDatabase">Selected Database:</string>
 
 </resources>

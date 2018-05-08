@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ConnectFragment">
@@ -8,9 +10,44 @@
     <!-- TODO: Update blank fragment layout -->
 
     <TextView
-        android:id="@+id/ConnectedToTxt"
+        android:id="@+id/c_txt_connectedToDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ConnectedTotxt"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
-</FrameLayout>
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:id="@+id/c_txt_connectedToOutput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="46dp" />
+
+    <TextView
+        android:id="@+id/c_txt_selectedDatabaseOutput"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/selectedDatabase"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="92dp" />
+
+    <TextView
+        android:id="@+id/c_txt_selectedDatabaseOutput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="138dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="370dp"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        tools:layout_editor_absoluteX="7dp"
+        tools:layout_editor_absoluteY="192dp" />
+
+</android.support.constraint.ConstraintLayout>

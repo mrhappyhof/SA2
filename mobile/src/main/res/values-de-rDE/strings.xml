@@ -17,11 +17,13 @@
     <string name="Disconnect">Verbindung trennen</string>
     <string name="StoreLoginData">Anmeldedaten speichern</string>
     <string name="ConnectedTotxt">Verbunden mit:</string>
-    <string name="title_activity_login">Anmeldung</string>
+    <string name="title_activity_login">LagerApp</string>
     <string name="name">Name</string>
     <string name="group">Gruppe</string>
     <string name="place">Lagerort</string>
     <string name="state">Zustand</string>
     <string name="comment">Anmerkung</string>
     <string name="img">Bild</string>
+    <string name="placeholder">_____________</string>
+    <string name="selectedDatabase">Ausgewählte Datenbank:</string>
 </resources>

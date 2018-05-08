@@ -25,9 +25,8 @@
         android:id="@+id/i_ip_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/i_ip_name"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="71dp"
         android:ems="10"
         android:hint="@string/group"
         android:inputType="textPersonName" />
@@ -36,9 +35,8 @@
         android:id="@+id/i_ip_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/i_ip_group"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="136dp"
         android:ems="10"
         android:hint="@string/place"
         android:inputType="textPersonName" />
@@ -47,9 +45,8 @@
         android:id="@+id/i_ip_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/i_ip_place"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="198dp"
         android:ems="10"
         android:hint="@string/state"
         android:inputType="textPersonName" />
@@ -58,9 +55,8 @@
         android:id="@+id/i_ip_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/i_ip_state"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="203dp"
         android:ems="10"
         android:hint="@string/comment"
         android:inputType="textPersonName" />
@@ -69,19 +65,27 @@
         android:id="@+id/i_ip_img"
         android:layout_width="175dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/i_ip_name"
-        android:layout_marginBottom="140dp"
+        android:layout_below="@+id/i_ip_comment"
         android:ems="10"
         android:hint="@string/img"
         android:inputType="textPersonName" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/i_btn_camera"
         android:layout_width="41dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/i_ip_img"
         android:layout_toEndOf="@+id/i_ip_img"
         android:background="@android:drawable/ic_menu_camera" />
+
+    <Button
+        android:id="@+id/i_btn_insert"
+        android:layout_width="216dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="116dp"
+        android:text="@string/tab_insert" />
 
 </RelativeLayout>
