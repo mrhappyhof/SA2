@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".InsertFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
 
     <EditText
@@ -86,6 +85,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="116dp"
+        android:onClick="btnInsert"
         android:text="@string/tab_insert" />
 
 </RelativeLayout>

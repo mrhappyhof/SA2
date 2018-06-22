@@ -20,4 +20,13 @@
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintTop_creator="1" />
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="460dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="25dp" />
+
 </android.support.constraint.ConstraintLayout>

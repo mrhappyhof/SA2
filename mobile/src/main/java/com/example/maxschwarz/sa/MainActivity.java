@@ -22,14 +22,19 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-
+    private String DB_URL="";
+    private String USER="";
+    private String PASS="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DB_URL=getIntent().getStringExtra("mDB_URL");
+        USER=getIntent().getStringExtra("mPASS");
+        PASS=getIntent().getStringExtra("mDB_URL");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(),DB_URL,USER,PASS);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -37,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
-
     }
 
 
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -97,22 +101,27 @@ public class MainActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private String DB_URL;
+        private String USER;
+        private String PASS;
+        public SectionsPagerAdapter(FragmentManager fm,String url, String user, String pass) {
             super(fm);
+            DB_URL=url;
+            USER=user;
+            PASS=pass;
         }
 
         @Override
         public Fragment getItem(int position) {
             switch(position){
                 case 0:
-                    return ConnectFragment.newInstance("h","g");
+                    return ConnectFragment.newInstance(DB_URL,USER,PASS);
                 case 1:
-                    return SearchFragment.newInstance("h","g");
+                    return SearchFragment.newInstance(DB_URL,USER,PASS);
                 case 2:
-                    return InsertFragment.newInstance("h","g");
+                    return InsertFragment.newInstance(DB_URL,USER,PASS);
                 case 3:
-                    return UsersFragment.newInstance("h","g");
+                    return UsersFragment.newInstance(DB_URL,USER,PASS);
                 default:
                     return PlaceholderFragment.newInstance(position+1);
             }
