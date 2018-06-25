@@ -26,6 +26,11 @@
     <string name="img">image</string>
     <string name="placeholder">***********</string>
     <string name="selectedDatabase">Selected Database:</string>
-    <string name="ErrorConnection">Error while Communicating</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="CommunicationError">Error while communicating</string>
+    <string name="select">Select</string>
+    <string name="id">Id</string>
+    <string name="PleaseWait">Please Wait ...</string>
 
 </resources>
