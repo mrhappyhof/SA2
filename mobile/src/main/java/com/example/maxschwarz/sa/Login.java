@@ -1,14 +1,17 @@
 package com.example.maxschwarz.sa;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -20,6 +23,8 @@ public class Login extends AppCompatActivity {
     EditText txt_db;
     EditText txt_user;
     EditText txt_pass;
+    CheckBox chkbx;
+    SharedPreferences.Editor prefsEditor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,12 +35,20 @@ public class Login extends AppCompatActivity {
         txt_db= (EditText) findViewById(R.id.l_ip_db);
         txt_user= (EditText) findViewById(R.id.l_ip_user);
         txt_pass= (EditText) findViewById(R.id.l_ip_pass);
+        chkbx= findViewById(R.id.l_chkbx_StoreLoginData);
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
+        prefsEditor=prefs.edit();
+        txt_dburl.setText(prefs.getString("savedDB_URL",""));
+        txt_db.setText(prefs.getString("savedDB",""));
+        txt_user.setText(prefs.getString("savedUSER",""));
+        txt_pass.setText(prefs.getString("savedPASS",""));
+        chkbx.setChecked(prefs.getBoolean("savedLogin",false));
     }
     public void btnConnect(View v){
         String DBURL=null;
         String USER=null;
         String PASS=null;
-        DBURL="jdbc:mysql://"+txt_dburl.getText().toString()+"/"+txt_db.getText().toString();
+        DBURL="jdbc:mysql://"+txt_dburl.getText().toString()+"/"+txt_db.getText().toString()+"?autoReconnect=true&useUnicode=true&characterEncoding=utf8";
         USER=txt_user.getText().toString();
         PASS=txt_pass.getText().toString();
         new sql(this).execute(DBURL,USER,PASS);
@@ -43,10 +56,28 @@ public class Login extends AppCompatActivity {
     public void Connect(boolean state,String db_url,String user,String pass,int perm){
         if(state==true) {
             Intent intent=new Intent(this, MainActivity.class);
-            intent.putExtra("mDB_URL",db_url);
-            intent.putExtra("mUSER",user);
-            intent.putExtra("mPASS",pass);
+
             intent.putExtra("mPerm",perm);
+            if(chkbx.isChecked()){
+                prefsEditor.putBoolean("savedLogin",true);
+               prefsEditor.putString("savedDB_URL",txt_dburl.getText().toString());
+               prefsEditor.putString("savedDB",txt_db.getText().toString());
+               prefsEditor.putString("savedUSER",txt_user.getText().toString());
+               prefsEditor.putString("savedPASS",txt_pass.getText().toString());
+            }else{
+                prefsEditor.putBoolean("savedLogin",false);
+                prefsEditor.putString("savedDB_URL","");
+                prefsEditor.putString("savedDB","");
+                prefsEditor.putString("savedUSER","");
+                prefsEditor.putString("savedPASS","");
+            }
+            prefsEditor.putString("DB_URL",db_url);
+            prefsEditor.putString("USER",user);
+            prefsEditor.putString("PASS",pass);
+            prefsEditor.putString("URL",txt_dburl.getText().toString());
+            prefsEditor.putString("DB",txt_db.getText().toString());
+            prefsEditor.putInt("PERM",perm);
+            prefsEditor.commit();
             startActivity(intent);
         }else{
             //Exception
@@ -86,7 +117,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
             USER=server_loginData[1];
             PASS=server_loginData[2];
             System.out.println("Connection possible");
-            DatabaseMetaData meta = conn.getMetaData();
+            DatabaseMetaData meta = conn.getMetaData();/*/
             rs = meta.getTables(null, null, "main",
                     null);
             if(rs.next()){
@@ -227,7 +258,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
 
                 }
             }
-
+            /*/
             try{
                 conn.close();
                 stmt.close();

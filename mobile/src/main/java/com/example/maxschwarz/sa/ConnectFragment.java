@@ -1,12 +1,15 @@
 package com.example.maxschwarz.sa;
 
-import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -18,12 +21,6 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class ConnectFragment extends Fragment {
-    private static final String mDB_URL = "";
-    private static final String mUSER = "";
-    private static final String mPASS = "";
-    private static String DB_URL;
-    private static String USER;
-    private static String PASS;
 
     private OnFragmentInteractionListener mListener;
 
@@ -33,31 +30,34 @@ public class ConnectFragment extends Fragment {
 
 
     // TODO: Rename and change types and number of parameters
-    public static ConnectFragment newInstance(String url, String user, String pass) {
+    public static ConnectFragment newInstance() {
         ConnectFragment fragment = new ConnectFragment();
-        Bundle args = new Bundle();
-        args.putString(mDB_URL, url);
-        args.putString(mUSER, user);
-        args.putString(mPASS, pass);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            DB_URL = getArguments().getString(mDB_URL);
-            USER = getArguments().getString(mUSER);
-            PASS = getArguments().getString(mPASS);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_connect, container, false);
+       View rootView=inflater.inflate(R.layout.fragment_connect, container, false);
+        rootView.findViewById(R.id.c_btn_disconnect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.c_btn_disconnect) {
+                    btnDisconnect(v);
+                }
+            }
+        });
+        TextView c_txt_URL=rootView.findViewById(R.id.c_txt_connectedToOutput);
+        TextView c_txt_DB=rootView.findViewById(R.id.c_txt_selectedDatabaseOutput);
+        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getContext());
+        c_txt_URL.setText(pref.getString("URL","**********"));
+        c_txt_DB.setText(pref.getString("DB","**********"));
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -72,6 +72,16 @@ public class ConnectFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+    public void btnDisconnect(View v){
+        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor prefEditor=pref.edit();
+        prefEditor.putString("DB_URL","");
+        prefEditor.putString("DB","");
+        prefEditor.putString("URL","");
+        prefEditor.putString("USER","");
+        prefEditor.putString("PASS","");
+        startActivity(new Intent(getContext(), Login.class));
     }
 
     /**

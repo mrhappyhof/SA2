@@ -26,4 +26,8 @@
     <string name="img">Bild</string>
     <string name="placeholder">_____________</string>
     <string name="selectedDatabase">Ausgewählte Datenbank:</string>
+    <string name="CommunicationError">Fehler bei der Kommunikation</string>
+    <string name="select">Auswählen</string>
+    <string name="id">Id</string>
+    <string name="PleaseWait">Bitte Warten ...</string>
 </resources>

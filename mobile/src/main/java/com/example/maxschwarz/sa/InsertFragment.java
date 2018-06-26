@@ -1,21 +1,24 @@
 package com.example.maxschwarz.sa;
 
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import android.widget.EditText;
 
 
 
@@ -28,30 +31,22 @@ import android.widget.EditText;
  * create an instance of this fragment.
  */
 public class InsertFragment extends Fragment {
-    private static final String mDB_URL = "";
-    private static final String mUSER = "";
-    private static final String mPASS = "";
-    private static String DB_URL;
-    private static String USER;
-    private static String PASS;
     private EditText i_ip_name;
     private EditText i_ip_group;
     private EditText i_ip_place;
     private EditText i_ip_state;
     private EditText i_ip_comment;
     private OnFragmentInteractionListener mListener;
+    Dialog dialog;
 
     public InsertFragment() {
         // Required empty public constructor
     }
 
 
-    public static InsertFragment newInstance(String url, String user, String pass) {
+    public static InsertFragment newInstance() {
         InsertFragment fragment = new InsertFragment();
         Bundle args = new Bundle();
-        args.putString(mDB_URL, url);
-        args.putString(mUSER, user);
-        args.putString(mPASS, pass);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,21 +54,14 @@ public class InsertFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            DB_URL = getArguments().getString(mDB_URL);
-            USER = getArguments().getString(mUSER);
-            PASS = getArguments().getString(mPASS);
-        }
-        i_ip_name = (EditText) getView().findViewById(R.id.i_ip_name);
-        i_ip_group = (EditText) getView().findViewById(R.id.i_ip_group);
-        i_ip_place = (EditText) getView().findViewById(R.id.i_ip_place);
-        i_ip_state = (EditText) getView().findViewById(R.id.i_ip_state);
-        i_ip_comment = (EditText) getView().findViewById(R.id.i_ip_comment);
-
     }
 
     public void btnInsert(View v){
-        new InsertSQL(this).execute(DB_URL,USER,PASS,i_ip_name.getText().toString(),i_ip_group.getText().toString(),i_ip_place.getText().toString(),i_ip_state.getText().toString(),i_ip_comment.getText().toString());
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String DB_URL=pref.getString("DB_URL","");
+        String USER=pref.getString("USER","");
+        String PASS=pref.getString("PASS","");
+        new InsertSQL(this).execute(DB_URL,USER,PASS,i_ip_name.getText().toString(),i_ip_group.getText().toString(),i_ip_state.getText().toString(),i_ip_place.getText().toString(),i_ip_comment.getText().toString());
     }
 
     @Override
@@ -88,7 +76,11 @@ public class InsertFragment extends Fragment {
                 }
             }
         });
-
+        i_ip_name = (EditText) v.findViewById(R.id.i_ip_name);
+        i_ip_group = (EditText) v.findViewById(R.id.i_ip_group);
+        i_ip_place = (EditText) v.findViewById(R.id.i_ip_place);
+        i_ip_state = (EditText) v.findViewById(R.id.i_ip_state);
+        i_ip_comment = (EditText) v.findViewById(R.id.i_ip_comment);
         return v;
     }
 
@@ -100,7 +92,25 @@ public class InsertFragment extends Fragment {
 
     public void Success(boolean state){
 
+        if(state==false){
+            dialog=new Dialog(getActivity());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.exception_dialog);
+            TextView massage=(TextView) dialog.findViewById(R.id.massage);
+            massage.setText(getString(R.string.CommunicationError));
+            Button ok=(Button)dialog.findViewById(R.id.ok);
+            ok.setText("OK");
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
     }
+
+
 
     @Override
     public void onDetach() {
@@ -124,11 +134,7 @@ public class InsertFragment extends Fragment {
     }
 }
 class InsertSQL extends AsyncTask<String, Void, Boolean> {
-    private ProgressDialog progressDialog;
     private InsertFragment m;
-    private String DB_URL;
-    private String USER;
-    private String PASS;
     protected InsertSQL(InsertFragment x){
         m=x;
     }
@@ -145,13 +151,10 @@ class InsertSQL extends AsyncTask<String, Void, Boolean> {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conn= DriverManager.getConnection(server_loginData[0],server_loginData[1],server_loginData[2]);
-            stmt=conn.prepareStatement("Select * from main");
-            rs=stmt.executeQuery();
-            rs.next();
-            System.out.println(rs.getString(2));
-            DB_URL=server_loginData[0];
-            USER=server_loginData[1];
-            PASS=server_loginData[2];
+            String sql="INSERT into main (name,groupe,state,place,comment) VALUES('"+server_loginData[3]+"','"+server_loginData[4]+"','"+server_loginData[5]+"','"+server_loginData[6]+"','"+server_loginData[7]+"');";
+            stmt=conn.prepareStatement(sql);
+            System.out.println(sql);
+            stmt.execute();
             System.out.println("Connection possible");
             try{
                 stmt.close();
@@ -159,7 +162,7 @@ class InsertSQL extends AsyncTask<String, Void, Boolean> {
             }catch(Exception e){
 
             }
-            return true;
+            return false;
         }catch(Exception e){
             System.out.println("Connection not possible");
             e.printStackTrace();
