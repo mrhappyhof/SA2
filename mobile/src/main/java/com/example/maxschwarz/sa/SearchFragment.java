@@ -3,6 +3,7 @@ package com.example.maxschwarz.sa;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,8 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -63,6 +67,7 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+        headers();
         return v;
     }
 
@@ -82,6 +87,7 @@ public class SearchFragment extends Fragment {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.search_dropdown);
         Button search=(Button)dialog.findViewById(R.id.btn_search);
+        Button searchDrop=(Button)dialog.findViewById(R.id.btn_dropdown);
         final EditText id=(EditText) dialog.findViewById(R.id.txt_id);
         final EditText name=(EditText) dialog.findViewById(R.id.txt_name);
         final EditText group=(EditText) dialog.findViewById(R.id.txt_group);
@@ -103,18 +109,83 @@ public class SearchFragment extends Fragment {
                 dialog.dismiss();
             }
         });
+        searchDrop.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View v) {
+                                              dialog.dismiss();
+                                          }
+                                      });
         dialog.show();
     }
     public void search(String DB_URL,String USER, String PASS, String id, String name, String group, String state, String place, String comment){
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
     }
-    public void Success(ArrayList table){
+    public void Success(ArrayList<myTableRow> table){
         mTable.removeAllViewsInLayout();
-        
+
+        for(int h=0;h<table.size();h++){
+            myTableRow row=table.get(h);
+            row.printOut();
+
+        }
     }
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+    public void headers(){
+        TableRow tr=new TableRow(getContext());
+        tr.setLayoutParams(new TableLayout.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT));
+        CheckBox chkbx=new CheckBox(getContext());
+        chkbx.setText("");
+
+        tr.addView(chkbx);
+        TextView b3=new TextView(getContext());
+        b3.setText(getContext().getString(R.string.id));
+        b3.setTextColor(Color.BLUE);
+        b3.setTextSize(10);
+        tr.addView(b3);
+
+        TextView b4=new TextView(getContext());
+        b4.setPadding(10, 0, 0, 0);
+        b4.setTextSize(10);
+        b4.setText(getContext().getString(R.string.name));
+        b4.setTextColor(Color.BLUE);
+        tr.addView(b4);
+
+        TextView b5=new TextView(getContext());
+        b5.setPadding(10, 0, 0, 0);
+        b5.setText(getContext().getString(R.string.group));
+        b5.setTextColor(Color.BLUE);
+        b5.setTextSize(10);
+        tr.addView(b5);
+        TextView b6=new TextView(getContext());
+        b6.setPadding(10, 0, 0, 0);
+        b6.setText(getContext().getString(R.string.state));
+        b6.setTextColor(Color.BLUE);
+        b6.setTextSize(10);
+        tr.addView(b6);
+        TextView b7=new TextView(getContext());
+        b7.setPadding(10, 0, 0, 0);
+        b7.setText(getContext().getString(R.string.place));
+        b7.setTextColor(Color.BLUE);
+        b7.setTextSize(10);
+        tr.addView(b7);
+        TextView b8=new TextView(getContext());
+        b8.setPadding(10, 0, 0, 0);
+        b8.setText(getContext().getString(R.string.comment));
+        b8.setTextColor(Color.BLUE);
+        b8.setTextSize(10);
+        tr.addView(b8);
+        mTable.addView(tr);
+
+        final View vline = new View(getContext());
+        vline.setLayoutParams(new
+                TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 2));
+        vline.setBackgroundColor(Color.BLUE);
+        mTable.addView(vline);
     }
 }
 class SearchSQL extends AsyncTask<String, Void, ArrayList> {
@@ -138,7 +209,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
         Connection conn;
         PreparedStatement stmt;
         ResultSet rs;
-        ArrayList table=null;
+        ArrayList table=new ArrayList();
         try {
             String id = server_loginData[3];
             String name = server_loginData[4];
@@ -185,7 +256,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
         }catch(Exception e){
             System.out.println("Connection not possible");
             e.printStackTrace();
-            table=null;
+            table.clear();
             table.add(new myTableRow(-1,null,null,null,null,null));
             return table;
         }
@@ -201,6 +272,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
             sql=sql+" OR";
             first=false;
         }
+        progressDialog.dismiss();
         return sql;
     }
 }
@@ -234,6 +306,10 @@ class myTableRow{
 
     public String getComment() {
         return comment;
+    }
+
+    public void printOut(){
+        System.out.println(id+","+name+","+group+","+state+","+place+","+comment);
     }
 
     public myTableRow(int Id, String Name, String Group, String State, String Place, String Comment){

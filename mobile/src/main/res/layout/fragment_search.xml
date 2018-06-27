@@ -17,7 +17,7 @@
     <TableLayout
         android:id="@+id/s_table"
         android:layout_width="match_parent"
-        android:layout_height="410dp"
+        android:layout_height="364dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
@@ -30,8 +30,8 @@
         android:id="@+id/s_btn_selectPopup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/s_table"
         android:drawableEnd="@android:drawable/arrow_down_float"
         android:text="@string/select" />
 </RelativeLayout>
