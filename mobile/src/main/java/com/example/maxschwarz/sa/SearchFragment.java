@@ -3,7 +3,6 @@ package com.example.maxschwarz.sa;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,11 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,6 +35,7 @@ public class SearchFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     Dialog dialog;
     TableLayout mTable;
+    ArrayList<myTableRow> contentTable;
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -67,7 +64,6 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
-        headers();
         return v;
     }
 
@@ -121,8 +117,7 @@ public class SearchFragment extends Fragment {
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
     }
     public void Success(ArrayList<myTableRow> table){
-        mTable.removeAllViewsInLayout();
-
+        contentTable=table;
         for(int h=0;h<table.size();h++){
             myTableRow row=table.get(h);
             row.printOut();
@@ -132,60 +127,6 @@ public class SearchFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
-    }
-    public void headers(){
-        TableRow tr=new TableRow(getContext());
-        tr.setLayoutParams(new TableLayout.LayoutParams(
-                TableRow.LayoutParams.MATCH_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        CheckBox chkbx=new CheckBox(getContext());
-        chkbx.setText("");
-
-        tr.addView(chkbx);
-        TextView b3=new TextView(getContext());
-        b3.setText(getContext().getString(R.string.id));
-        b3.setTextColor(Color.BLUE);
-        b3.setTextSize(10);
-        tr.addView(b3);
-
-        TextView b4=new TextView(getContext());
-        b4.setPadding(10, 0, 0, 0);
-        b4.setTextSize(10);
-        b4.setText(getContext().getString(R.string.name));
-        b4.setTextColor(Color.BLUE);
-        tr.addView(b4);
-
-        TextView b5=new TextView(getContext());
-        b5.setPadding(10, 0, 0, 0);
-        b5.setText(getContext().getString(R.string.group));
-        b5.setTextColor(Color.BLUE);
-        b5.setTextSize(10);
-        tr.addView(b5);
-        TextView b6=new TextView(getContext());
-        b6.setPadding(10, 0, 0, 0);
-        b6.setText(getContext().getString(R.string.state));
-        b6.setTextColor(Color.BLUE);
-        b6.setTextSize(10);
-        tr.addView(b6);
-        TextView b7=new TextView(getContext());
-        b7.setPadding(10, 0, 0, 0);
-        b7.setText(getContext().getString(R.string.place));
-        b7.setTextColor(Color.BLUE);
-        b7.setTextSize(10);
-        tr.addView(b7);
-        TextView b8=new TextView(getContext());
-        b8.setPadding(10, 0, 0, 0);
-        b8.setText(getContext().getString(R.string.comment));
-        b8.setTextColor(Color.BLUE);
-        b8.setTextSize(10);
-        tr.addView(b8);
-        mTable.addView(tr);
-
-        final View vline = new View(getContext());
-        vline.setLayoutParams(new
-                TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 2));
-        vline.setBackgroundColor(Color.BLUE);
-        mTable.addView(vline);
     }
 }
 class SearchSQL extends AsyncTask<String, Void, ArrayList> {
