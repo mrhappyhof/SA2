@@ -58,14 +58,21 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_search, container, false);
         mTable=v.findViewById(R.id.s_table);
         v.findViewById(R.id.s_header_chkbx).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if(v.findViewById(R.id.s_header_chkbx).isSelected()){
-
+                    for(int i=0;i<mTable.getChildCount();i++){
+                        TableRow t =(TableRow)mTable.getChildAt(i);
+                        t.getChildAt(0).setSelected(true);
+                    }
+                }else{
+                    for(int i=0;i<mTable.getChildCount();i++){
+                        TableRow t =(TableRow)mTable.getChildAt(i);
+                        t.getChildAt(0).setSelected(false);
+                    }
                 }
             }
         });
