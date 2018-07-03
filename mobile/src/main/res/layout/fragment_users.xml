@@ -130,7 +130,7 @@
         android:layout_height="50dp"
         android:layout_alignStart="@+id/u_btn_search"
         android:layout_alignTop="@+id/u_ip_message"
-        android:text="Message" />
+        android:text="@string/message" />
 
     <Button
         android:id="@+id/u_btn_delete"
@@ -139,6 +139,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="65dp"
-        android:text="Delete" />
+        android:text="@string/delete" />
 
 </RelativeLayout>

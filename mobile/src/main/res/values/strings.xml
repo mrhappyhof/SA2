@@ -37,5 +37,6 @@
     <string name="enabled">Enabled</string>
     <string name="message">Message</string>
     <string name="change">Change</string>
+    <string name="delete">Delete</string>
 
 </resources>
