@@ -13,8 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,7 +39,6 @@ public class SearchFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     Dialog dialog;
     TableLayout mTable;
-    ArrayList<myTableRow> contentTable;
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -117,11 +120,25 @@ public class SearchFragment extends Fragment {
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
     }
     public void Success(ArrayList<myTableRow> table){
-        contentTable=table;
         for(int h=0;h<table.size();h++){
             myTableRow row=table.get(h);
             row.printOut();
 
+        }
+        mTable.removeAllViewsInLayout();
+        if(table.get(0).getId()!=-1) {
+            for (int i = 0; i < table.size(); i++) {
+
+                TableRow tableRow = new TableRow(this.getContext());
+                TableRow row = (TableRow)LayoutInflater.from(getContext()).inflate(R.layout.tablerow, null);
+                ((TextView)row.findViewById(R.id.row_id)).setText(""+table.get(i).getId());
+                ((TextView)row.findViewById(R.id.row_name)).setText(table.get(i).getName());
+                System.out.println(row);
+                System.out.println(i);
+                mTable.addView(tableRow);
+
+            }
+            mTable.requestLayout();
         }
     }
 
@@ -206,6 +223,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
 
     @Override
     protected void onPostExecute(ArrayList table) {
+        progressDialog.dismiss();
         m.Success(table);
     }
     String first(String sql){
@@ -213,7 +231,6 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
             sql=sql+" OR";
             first=false;
         }
-        progressDialog.dismiss();
         return sql;
     }
 }
