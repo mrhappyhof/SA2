@@ -30,4 +30,8 @@
     <string name="select">Auswählen</string>
     <string name="id">Id</string>
     <string name="PleaseWait">Bitte Warten ...</string>
+    <string name="perm">Berechtigung</string>
+    <string name="enabled">Aktiviert</string>
+    <string name="message">Nachricht</string>
+    <string name="change">Ändern</string>
 </resources>
