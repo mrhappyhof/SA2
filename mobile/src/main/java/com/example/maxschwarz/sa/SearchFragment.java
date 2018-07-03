@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.Checkable;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -26,7 +26,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 
 /**
@@ -63,15 +62,15 @@ public class SearchFragment extends Fragment {
         v.findViewById(R.id.s_header_chkbx).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(v.findViewById(R.id.s_header_chkbx).isSelected()){
+                if(((CheckBox)v.findViewById(R.id.s_header_chkbx)).isChecked()){
                     for(int i=0;i<mTable.getChildCount();i++){
                         TableRow t =(TableRow)mTable.getChildAt(i);
-                        t.getChildAt(0).setSelected(true);
+                        ((CheckBox)t.getChildAt(0)).setChecked(true);
                     }
                 }else{
                     for(int i=0;i<mTable.getChildCount();i++){
                         TableRow t =(TableRow)mTable.getChildAt(i);
-                        t.getChildAt(0).setSelected(false);
+                        ((CheckBox)t.getChildAt(0)).setChecked(false);
                     }
                 }
             }
@@ -137,7 +136,7 @@ public class SearchFragment extends Fragment {
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
     }
     public void Success(ArrayList<myTableRow> table){
-        ProgressDialog progressDialog=new ProgressDialog(getContext());
+        ProgressDialog progressDialog=new ProgressDialog(getActivity());
         progressDialog.setMessage(getActivity().getString(R.string.PleaseWait));
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -159,13 +158,21 @@ public class SearchFragment extends Fragment {
                 ((TextView)row.findViewById(R.id.row_place)).setText(table.get(i).getPlace()+"\n");
                 ((TextView)row.findViewById(R.id.row_comment)).setText(table.get(i).getComment()+"\n");
                 if(i%2==0){
-                   row.setBackgroundColor(0x9A9A9A);
+                    row.setBackgroundColor((Color.parseColor("#9A9A9A")));
                 }else{
-                    row.setBackgroundColor(0xD2D2D2);
+                    row.setBackgroundColor((Color.parseColor("#D2D2D2")));
                 }
+                row.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        dialog=new Dialog(getActivity());
+                        dialog.setContentView(R.layout.search_dropdown);
+                        return true;
+                    }
+                });
                 mTable.addView(row);
-                mTable.requestLayout();
             }
+            mTable.requestLayout();
         }
         progressDialog.dismiss();
     }

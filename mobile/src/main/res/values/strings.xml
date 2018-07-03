@@ -32,6 +32,7 @@
     <string name="select">Select</string>
     <string name="id">Id</string>
     <string name="PleaseWait">Please Wait ...</string>
+    <string name="SelectAnOption">Please select an option</string>
     <string name="perm">Permission</string>
     <string name="enabled">Enabled</string>
     <string name="message">Message</string>
