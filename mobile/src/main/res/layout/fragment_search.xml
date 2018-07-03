@@ -11,6 +11,8 @@
         android:id="@+id/s_btn_searchPopup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:backgroundTint="@android:color/white"
         android:drawableEnd="@android:drawable/arrow_down_float"
         android:text="@string/tab_search" />
 
@@ -24,10 +26,11 @@
 
 
         <TableRow
-            android:background="@color/colorAccent"
+            android:background="@color/colorPrimary"
             android:padding="8dp">
 
             <CheckBox
+                android:id="@+id/s_header_chkbx"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

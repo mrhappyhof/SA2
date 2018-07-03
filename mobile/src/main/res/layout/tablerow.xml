@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-
-        android:background="@color/colorPrimaryDark"
-        android:padding="8dp">
+        android:id="@+id/tr_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
 
         <CheckBox
             android:id="@+id/row_chkbx"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_id"
@@ -17,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/id"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_name"
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/name"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_group"
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/group"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_state"
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/state"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_place"
@@ -49,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/place"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/row_comment"
@@ -57,6 +58,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/comment"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black" />
 
 </TableRow>

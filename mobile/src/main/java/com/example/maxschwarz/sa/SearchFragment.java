@@ -2,6 +2,7 @@ package com.example.maxschwarz.sa;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 
 /**
@@ -59,6 +61,14 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_search, container, false);
         mTable=v.findViewById(R.id.s_table);
+        v.findViewById(R.id.s_header_chkbx).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(v.findViewById(R.id.s_header_chkbx).isSelected()){
+
+                }
+            }
+        });
         v.findViewById(R.id.s_btn_searchPopup).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +130,10 @@ public class SearchFragment extends Fragment {
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
     }
     public void Success(ArrayList<myTableRow> table){
+        ProgressDialog progressDialog=new ProgressDialog(getContext());
+        progressDialog.setMessage(getActivity().getString(R.string.PleaseWait));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         for(int h=0;h<table.size();h++){
             myTableRow row=table.get(h);
             row.printOut();
@@ -128,18 +142,25 @@ public class SearchFragment extends Fragment {
         mTable.removeAllViewsInLayout();
         if(table.get(0).getId()!=-1) {
             for (int i = 0; i < table.size(); i++) {
-
-                TableRow tableRow = new TableRow(this.getContext());
-                TableRow row = (TableRow)LayoutInflater.from(getContext()).inflate(R.layout.tablerow, null);
-                ((TextView)row.findViewById(R.id.row_id)).setText(""+table.get(i).getId());
-                ((TextView)row.findViewById(R.id.row_name)).setText(table.get(i).getName());
-                System.out.println(row);
-                System.out.println(i);
-                mTable.addView(tableRow);
-
+                LayoutInflater inflater =
+                        (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View row = inflater.inflate(R.layout.tablerow, null,false);
+                ((TextView)row.findViewById(R.id.row_id)).setText(""+table.get(i).getId()+"\n");
+                ((TextView)row.findViewById(R.id.row_name)).setText(table.get(i).getName()+"\n");
+                ((TextView)row.findViewById(R.id.row_group)).setText(table.get(i).getGroup()+"\n");
+                ((TextView)row.findViewById(R.id.row_state)).setText(table.get(i).getState()+"\n");
+                ((TextView)row.findViewById(R.id.row_place)).setText(table.get(i).getPlace()+"\n");
+                ((TextView)row.findViewById(R.id.row_comment)).setText(table.get(i).getComment()+"\n");
+                if(i%2==0){
+                   row.setBackgroundColor(0x9A9A9A);
+                }else{
+                    row.setBackgroundColor(0xD2D2D2);
+                }
+                mTable.addView(row);
+                mTable.requestLayout();
             }
-            mTable.requestLayout();
         }
+        progressDialog.dismiss();
     }
 
     public interface OnFragmentInteractionListener {
