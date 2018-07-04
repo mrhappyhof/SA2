@@ -1,16 +1,21 @@
 package com.example.maxschwarz.sa;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.ConditionVariable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -23,7 +28,9 @@ public class Login extends AppCompatActivity {
     EditText txt_db;
     EditText txt_user;
     EditText txt_pass;
+    AsyncTask s;
     CheckBox chkbx;
+    Dialog dialog;
     SharedPreferences.Editor prefsEditor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +58,7 @@ public class Login extends AppCompatActivity {
         DBURL="jdbc:mysql://"+txt_dburl.getText().toString()+"/"+txt_db.getText().toString()+"?autoReconnect=true&useUnicode=true&characterEncoding=utf8";
         USER=txt_user.getText().toString();
         PASS=txt_pass.getText().toString();
-        new sql(this).execute(DBURL,USER,PASS);
+        s=new sql(this).execute(DBURL,USER,PASS);
     }
     public void Connect(boolean state,String db_url,String user,String pass,int perm){
         if(state==true) {
@@ -80,7 +87,20 @@ public class Login extends AppCompatActivity {
             prefsEditor.commit();
             startActivity(intent);
         }else{
-            //Exception
+            dialog=new Dialog(this);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.exception_dialog);
+            TextView massage=(TextView) dialog.findViewById(R.id.massage);
+            massage.setText(getString(R.string.CommunicationError));
+            Button ok=(Button)dialog.findViewById(R.id.ok);
+            ok.setText("OK");
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
         }
     }
 
@@ -88,9 +108,12 @@ public class Login extends AppCompatActivity {
 class sql extends AsyncTask<String, Void, Boolean> {
     private ProgressDialog progressDialog;
     private Login m;
+    private Dialog dialog;
     private String DB_URL;
     private String USER;
     private String PASS;
+   ConditionVariable mCondition = new ConditionVariable(true);
+    private boolean setupWanted=false;
     int permission=-1;
     protected sql(Login x){
         progressDialog = new ProgressDialog(x);
@@ -117,162 +140,79 @@ class sql extends AsyncTask<String, Void, Boolean> {
             USER=server_loginData[1];
             PASS=server_loginData[2];
             System.out.println("Connection possible");
-            DatabaseMetaData meta = conn.getMetaData();/*/
+            DatabaseMetaData meta = conn.getMetaData();
+            //Permissions:
+            //1: Admin
+            //2: Stuffguy
+            //3:Massages add
+            //4: Normal
+            //5: just see
+
             rs = meta.getTables(null, null, "main",
                     null);
             if(rs.next()){
+                System.out.println("main");
                 rs = meta.getTables(null, null, "users",
                         null);
                 if(rs.next()){
-                    rs = meta.getTables(null, null, "material",
-                            null);
+                    System.out.println("users");
+                        rs = meta.getTables(null, null, "material",
+                                null);
                     if(rs.next()){
+                        System.out.println("material");
                         stmt=conn.prepareStatement("Select version From material");
+                        rs=stmt.executeQuery();
                         rs.next();
-                        if(rs.getString("version")=="1.0.0"){
-                            stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
-                            rs=stmt.executeQuery();
-                            if(rs.next()){
-                                if(rs.getInt("perm")!=0){
-                                    permission=rs.getInt("perm");
-                                    return true;
-                                }else{
-                                    Exception("ErrorComunication");
-                                    return false;
-                                }
-                            }else{
-                                Exception("User not existing");
-                                return false;
+                        boolean success=false;
+                        String version=m.getString(R.string.version);
+                        if(rs.getString("version").equals(version)){
+                            success=true;
+                         }else{
+                            if(update(version)){
+                                success=true;
                             }
-
                         }
-                    }else{
-                        //Permissions:
-                        //1: Admin
-                        //2: Stuffguy
-                        //3:Massages add
-                        //4: Normal
-                        //5: just see
-                        stmt=conn.prepareStatement("CREATE TABLE material ( id INT(11) AUTO_INCREMENT PRIMARY KEY, version VARCHAR(5) NOT NULL, lastUpdate default now() NOT NULL);");
-                        if(stmt.execute()){
-                            stmt=conn.prepareStatement("Insert INTO material (version) VALUES (1.0.0)");
-                            stmt.execute();
-                            stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
-                            rs=stmt.executeQuery();
-                            if(rs.next()){
-                                if(rs.getInt("perm")!=0){
-                                    permission=rs.getInt("perm");
-                                    return true;
-                                }else{
-                                    Exception("ErrorComunication");
-                                    return false;
-                                }
-                            }else{
-                                Exception("ErrorComunication");
-                                return false;
-                            }
-
+                        if(success){
+                            System.out.println("version");
+                        stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
+                        rs=stmt.executeQuery();
+                         if(rs.next()){
+                        if(rs.getInt("perm")!=0){
+                            permission=rs.getInt("perm");
+                            return true;
                         }else{
-                            Exception("ErrorComunication");
+                            //Exception("ErrorComunication");
                             return false;
                         }
+                         }else {
+                             //Exception("User not existing");
+                             return false;
+                         }
+                        }
+                    }else{
+                        defective();
                     }
                 }else{
-                    stmt=conn.prepareStatement("CREATE TABLE users ( id INT(6) AUTO_INCREMENT PRIMARY KEY, user VARCHAR(30) NOT NULL, massages tinyint(1) NOT NULL default 0,perm INT(1);");
-                    if(stmt.execute()){
-                        stmt=conn.prepareStatement("Insert INTO users (user,perm) Values ("+USER+",1);");
-                        if(stmt.execute()){
-                            rs = meta.getTables(null, null, "material",
-                                    null);
-                            if(rs.next()){
-                                stmt=conn.prepareStatement("Select version From material");
-                                rs.next();
-                                if(rs.getString("version")=="1.0.0"){
-                                    stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
-                                    rs=stmt.executeQuery();
-                                    if(rs.next()){
-                                        if(rs.getInt("perm")!=0){
-                                            permission=rs.getInt("perm");
-                                            return true;
-                                        }else{
-                                            Exception("ErrorComunication");
-                                            return false;
-                                        }
-                                    }else{
-                                        Exception("User not existing");
-                                        return false;
-                                    }
-
-                                }
-                            }else{
-                                //Permissions:
-                                //1: Admin
-                                //2: Stuffguy
-                                //3:Massages add
-                                //4: Normal
-                                //5: just see
-                                stmt=conn.prepareStatement("CREATE TABLE material ( id INT(11) AUTO_INCREMENT PRIMARY KEY, version VARCHAR(5) NOT NULL, lastUpdate default now() NOT NULL);");
-                                if(stmt.execute()){
-                                    stmt=conn.prepareStatement("Insert INTO material (version) VALUES (1.0.0)");
-                                    stmt.execute();
-                                    stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
-                                    rs=stmt.executeQuery();
-                                    if(rs.next()){
-                                        if(rs.getInt("perm")!=0){
-                                            permission=rs.getInt("perm");
-                                            return true;
-                                        }else{
-                                            Exception("ErrorComunication");
-                                            return false;
-                                        }
-                                    }else{
-                                        Exception("ErrorComunication");
-                                        return false;
-                                    }
-
-                                }else{
-                                    Exception("ErrorComunication");
-                                    return false;
-                                }
-                            }
-
-                        }else{
-                            Exception("ErrorComunication");
-                            return false;
-                        }
-                    }else{
-                        Exception("ErrorComunication");
-                        return false;
-                    }
+                    defective();
                 }
             }else{
-                try{
-                    stmt=conn.prepareStatement("CREATE TABLE main ( id INT(11) AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), groupe VARCHAR(255), state VARCHAR(255),place VARCHAR(255)img VARCHAR(255),comment VARCHAR(255));");
-                    if(stmt.execute()){
+                unConfigured();
+                return true;
 
-                    }else{
-                        Exception("ErrorComunication");
-                        return false;
-                    }
-                }catch(Exception e){
-
-                }
             }
-            /*/
             try{
                 conn.close();
                 stmt.close();
             }catch(Exception e){
 
             }
-            return true;
         }catch(Exception e){
             System.out.println("Connection not possible");
             e.printStackTrace();
 
             return false;
         }
-
+        return false;
     }
 
     @Override
@@ -281,7 +221,84 @@ class sql extends AsyncTask<String, Void, Boolean> {
         m.Connect(state,DB_URL,USER,PASS,permission);
     }
 
-    private void Exception(String massage){
-        //Add exception
+    private boolean unConfigured(){
+            PreparedStatement stmt=null;
+            Connection conn=null;
+            m.runOnUiThread(new Runnable() {
+            public void run() {
+                dialog=new Dialog(m);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.configuration_popup);
+                Button cancel=(Button)dialog.findViewById(R.id.conf_btn_cancel);
+                Button ok=(Button)dialog.findViewById(R.id.conf_btn_ok);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        myNotify();
+                    }
+                });
+                ok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        myNotify();
+                        setupWanted=true;
+                    }
+                });
+                dialog.show();
+            }
+            });
+
+            try {
+                synchronized (this){
+                    wait();
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            if(setupWanted){
+                try {
+                    conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                    stmt=conn.prepareStatement("CREATE TABLE users ( id INT(6) AUTO_INCREMENT PRIMARY KEY, user VARCHAR(30) NOT NULL, massages tinyint(1) NOT NULL default 0,perm INT(1));");
+                    stmt.execute();
+                    stmt=conn.prepareStatement("CREATE TABLE main ( id INT(11) AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), groupe VARCHAR(255), state VARCHAR(255),place VARCHAR(255),img VARCHAR(255),comment VARCHAR(255));");
+                    stmt.execute();
+                    stmt=conn.prepareStatement("CREATE TABLE material ( id INT(11) AUTO_INCREMENT PRIMARY KEY, version VARCHAR(5) NOT NULL, lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);");
+                    stmt.execute();
+                    stmt = conn.prepareStatement("Insert INTO material (version) VALUES ('1.0.0')");
+                    stmt.execute();
+                    stmt = conn.prepareStatement("Insert INTO users (user,perm) VALUES ('"+USER+"',1)");
+                    stmt.execute();
+                    return true;
+                }catch(Exception e){
+                    e.printStackTrace();
+                    return false;
+                }
+                finally {
+                    try {
+                        stmt.close();
+                        conn.close();
+                    }catch(Exception e){
+
+                    }
+                }
+            }
+            return false;
+    }
+    private void defective(){
+        //Repair -table
+    }
+    synchronized void unlock(){
+        mCondition.open();
+    }
+    private boolean update(String version){
+        //TODO: Add Updates
+        return false;
+    }
+    public void myNotify(){
+        synchronized (this){
+            notify();
+        }
     }
 }

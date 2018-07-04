@@ -9,12 +9,36 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="@string/SelectAnOption" />
 
     <Button
-        android:id="@+id/ok"
+        android:id="@+id/option_btn_delete"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Placeholder" />
+        android:text="@string/delete" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Rent" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/option_btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/close" />
 
 </LinearLayout>

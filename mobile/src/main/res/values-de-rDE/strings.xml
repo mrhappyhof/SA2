@@ -35,4 +35,8 @@
     <string name="message">Nachricht</string>
     <string name="change">Ändern</string>
     <string name="delete">Löschen</string>
+    <string name="Rent">Ausleihen</string>
+    <string name="close">Schließen</string>
+    <string name="SelectAnOption">Bitte wählen sie eine Möglichkeit</string>
+    <string name="SetUpText">Der Server ist noch nicht eingerichtet. Wollen sie ihn mit dem aktuellen Nutzer als Administartor einrichten?</string>
 </resources>

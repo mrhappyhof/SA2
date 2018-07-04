@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 
@@ -83,6 +84,12 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+        v.findViewById(R.id.s_btn_selectPopup).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnSelect(v);
+            }
+        });
         return v;
     }
 
@@ -96,6 +103,33 @@ public class SearchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+    public void btnSelect(View v){
+        dialog=new Dialog(getActivity());
+        dialog.setContentView(R.layout.popup_s_options);
+        dialog.findViewById(R.id.option_btn_delete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> list=new ArrayList<>();
+                for(int g=0;g<mTable.getChildCount();g++){
+                    if(((CheckBox)((TableRow)mTable.getChildAt(g)).getChildAt(0)).isChecked()){
+                        TableRow r=(TableRow)mTable.getChildAt(g);
+                        TextView tv= (TextView) r.getChildAt(1);
+                        String value=tv.getText().toString();
+                        list.add(value);
+                    }
+                }
+                String[]  liste=list.toArray(new String[0]);
+                delete(liste);
+            }
+        });
+        dialog.findViewById(R.id.option_btn_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
     public void btnSearch(View v){
         dialog=new Dialog(getActivity());
@@ -131,6 +165,7 @@ public class SearchFragment extends Fragment {
                                           }
                                       });
         dialog.show();
+
     }
     public void search(String DB_URL,String USER, String PASS, String id, String name, String group, String state, String place, String comment){
         new SearchSQL(this).execute(DB_URL,USER,PASS,id,name,group,state,place,comment);
@@ -165,8 +200,27 @@ public class SearchFragment extends Fragment {
                 row.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
+                        final View ve=v;
                         dialog=new Dialog(getActivity());
-                        dialog.setContentView(R.layout.search_dropdown);
+                        dialog.setContentView(R.layout.popup_s_options);
+                        dialog.findViewById(R.id.option_btn_delete).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                delete_();
+                            }
+                            public void delete_(){
+                                TableRow trow=(TableRow)ve;
+                                TextView t=(TextView)trow.getChildAt(1);
+                                delete(t.getText().toString());
+                            }
+                        });
+                        dialog.findViewById(R.id.option_btn_close).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
                         return true;
                     }
                 });
@@ -179,6 +233,57 @@ public class SearchFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+    public void SuccessDelete(boolean state, String[] list){
+        int h=list.length;
+        if(state){
+            for(int u=0;u<mTable.getChildCount();u++){
+                if(h>0) {
+                    boolean x = false;
+                    TableRow row = (TableRow) mTable.getChildAt(u);
+                    for (int f = 0; f < list.length; f++) {
+                        if (((TextView) row.getChildAt(1)).getText().toString() == list[f]) {
+                            x = true;
+                            h--;
+                        }
+                    }
+                    if (x) {
+                        mTable.removeView(mTable.getChildAt(u));
+                    }
+                }
+            }
+        }else{
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            final String DB_URL=pref.getString("DB_URL","");
+            final String USER=pref.getString("USER","");
+            final String PASS=pref.getString("PASS","");
+            search(DB_URL,USER,PASS,"","","","","","");
+            dialog=new Dialog(getActivity());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.exception_dialog);
+            TextView massage=(TextView) dialog.findViewById(R.id.massage);
+            massage.setText(getString(R.string.CommunicationError));
+            Button ok=(Button)dialog.findViewById(R.id.ok);
+            ok.setText("OK");
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+    }
+    public void delete(String... id){
+        String[] strings=new String[id.length+3];
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        strings[0]=pref.getString("DB_URL","");
+        strings[1]=pref.getString("USER","");
+        strings[2]=pref.getString("PASS","");
+        for(int j=0;j<id.length;j++){
+            strings[j+3]=id[j];
+        }
+       new DeleteSQL(this).execute(strings);
     }
 }
 class SearchSQL extends AsyncTask<String, Void, ArrayList> {
@@ -214,7 +319,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
             conn = DriverManager.getConnection(server_loginData[0], server_loginData[1], server_loginData[2]);
             String sql = "Select * from main";
             if (id != "-1") {
-                sql = sql + first(sql)+" WHERE 'id' LIKE '"+id+"'";
+                sql = sql + first(sql)+" WHERE 'id' = '"+id+"'";
             }
             if(name.trim().length()>0){
                 sql = sql + first(sql)+" WHERE 'name' LIKE '"+name+"'";
@@ -269,7 +374,7 @@ class SearchSQL extends AsyncTask<String, Void, ArrayList> {
         return sql;
     }
 }
-class myTableRow{
+class myTableRow {
     private int id;
     private String name;
     private String group;
@@ -301,18 +406,64 @@ class myTableRow{
         return comment;
     }
 
-    public void printOut(){
-        System.out.println(id+","+name+","+group+","+state+","+place+","+comment);
+    public void printOut() {
+        System.out.println(id + "," + name + "," + group + "," + state + "," + place + "," + comment);
     }
 
-    public myTableRow(int Id, String Name, String Group, String State, String Place, String Comment){
-        id=Id;
-        name=Name;
-        group=Group;
-        state=State;
-        place=Place;
-        comment=Comment;
+    public myTableRow(int Id, String Name, String Group, String State, String Place, String Comment) {
+        id = Id;
+        name = Name;
+        group = Group;
+        state = State;
+        place = Place;
+        comment = Comment;
     }
 
 
+}
+class DeleteSQL extends AsyncTask<String, Void, Boolean> {
+    private SearchFragment m;
+    private ProgressDialog progressDialog;
+    String[] w;
+    protected DeleteSQL(SearchFragment x){
+        m=x;
+        progressDialog = new ProgressDialog(x.getActivity());
+    }
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog.setMessage(m.getString(R.string.PleaseWait));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        System.out.println("Initializing Connection");
+    }
+
+    protected Boolean doInBackground(String... server_loginData) {
+        String DB_URL=server_loginData[0];
+        String USER=server_loginData[1];
+        String PASS=server_loginData[2];
+        Connection conn;
+        Statement stmt;
+        w=server_loginData;
+        try {
+            conn=DriverManager.getConnection(DB_URL,USER,PASS);
+            stmt=conn.createStatement();
+            for(int i=0;i<server_loginData.length-3;i++){
+                String sql= "DELETE FROM main WHERE id='"+server_loginData[i+3]+"'";
+                System.out.println(sql);
+                stmt.execute(sql);
+            }
+            return true;
+        }catch(Exception e){
+            System.out.println("Connection not possible");
+            e.printStackTrace();
+            return false;
         }
+
+    }
+    @Override
+    protected void onPostExecute(Boolean t) {
+        progressDialog.dismiss();
+        m.SuccessDelete(t,w);
+    }
+}
