@@ -73,7 +73,7 @@
         android:layout_height="50dp"
         android:layout_alignStart="@+id/u_btn_search"
         android:layout_alignTop="@+id/u_ip_password"
-        android:text="Change" />
+        android:text="@string/change" />
 
     <EditText
         android:id="@+id/u_ip_permission"
@@ -92,7 +92,7 @@
         android:layout_height="50dp"
         android:layout_alignStart="@+id/u_btn_search"
         android:layout_alignTop="@+id/u_ip_permission"
-        android:text="Change" />
+        android:text="@string/change" />
 
     <EditText
         android:id="@+id/u_ip_enabled"
@@ -111,7 +111,7 @@
         android:layout_height="50dp"
         android:layout_alignStart="@+id/u_btn_search"
         android:layout_alignTop="@+id/u_ip_enabled"
-        android:text="Change" />
+        android:text="@string/change" />
 
     <EditText
         android:id="@+id/u_ip_message"

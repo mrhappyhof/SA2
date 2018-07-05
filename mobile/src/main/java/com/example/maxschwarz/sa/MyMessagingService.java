@@ -30,6 +30,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 
 public class MyMessagingService extends Service {
+    //WIP
     public static final String READ_ACTION =
             "com.example.maxschwarz.sa.ACTION_MESSAGE_READ";
     public static final String REPLY_ACTION =

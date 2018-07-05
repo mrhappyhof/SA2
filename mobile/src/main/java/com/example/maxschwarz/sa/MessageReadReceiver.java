@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class MessageReadReceiver extends BroadcastReceiver {
     private static final String TAG = MessageReadReceiver.class.getSimpleName();
-
+    //WIP
     @Override
     public void onReceive(Context context, Intent intent) {
         if (MyMessagingService.READ_ACTION.equals(intent.getAction())) {
