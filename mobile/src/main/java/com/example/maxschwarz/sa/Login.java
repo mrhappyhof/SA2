@@ -22,6 +22,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Date;
 
 public class Login extends AppCompatActivity {
     EditText txt_dburl;
@@ -141,17 +142,18 @@ class sql extends AsyncTask<String, Void, Boolean> {
             PASS=server_loginData[2];
             System.out.println("Connection possible");
             DatabaseMetaData meta = conn.getMetaData();
-            //Permissions:
-            //1: Admin
-            //2: Stuffguy
-            //3:Massages add
-            //4: Normal
-            //5: just see
+            stmt=conn.prepareStatement("SHOW tables");
+            rs=stmt.executeQuery();
 
-            rs = meta.getTables(null, null, "main",
-                    null);
+            //Permissions:
+            //0:just see
+            //1: normal
+            //2: normal + msg
+            //3: staff
+            //4: admin
+
             if(rs.next()){
-                System.out.println("main");
+                System.out.println("already setup");
                 rs = meta.getTables(null, null, "users",
                         null);
                 if(rs.next()){
@@ -262,7 +264,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     conn = DriverManager.getConnection(DB_URL, USER, PASS);
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `imgsources` (\n" +
-                                    "  `imgsource_id` int(20) NOT NULL,\n" +
+                                    "  `imgsource_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `imgsource_source` varchar(255) NOT NULL,\n" +
                                     "  `imgsource_type` varchar(5) NOT NULL,\n" +
                                     "  `imgsource_comment` varchar(255) DEFAULT NULL,\n" +
@@ -271,7 +273,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `imgs` (\n" +
-                                    "  `img_id` int(20) NOT NULL,\n" +
+                                    "  `img_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `img_name` varchar(255) NOT NULL,\n" +
                                     "  `imgsource_id` int(20) NOT NULL,\n" +
                                     "  `img_comment` varchar(255) DEFAULT NULL,\n" +
@@ -281,7 +283,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `groups` (\n" +
-                                    "  `group_id` int(20) NOT NULL,\n" +
+                                    "  `group_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `group_name` varchar(255) NOT NULL,\n" +
                                     "  `group_comment` varchar(255) DEFAULT NULL,\n" +
                                     "PRIMARY KEY (`group_id`)\n"+
@@ -289,7 +291,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `places` (\n" +
-                                    "  `place_id` int(20) NOT NULL,\n" +
+                                    "  `place_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `place_addresse` varchar(255) NOT NULL,\n" +
                                     "  `place_comment` varchar(255) DEFAULT NULL,\n" +
                                     "PRIMARY KEY (`place_id`)\n"+
@@ -297,7 +299,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `states` (\n" +
-                                    "  `state_id` int(20) NOT NULL,\n" +
+                                    "  `state_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `state_name` varchar(255) NOT NULL,\n" +
                                     "  `todo_id` int(20) NOT NULL,\n" +
                                     "  `state_comment` varchar(255) DEFAULT NULL,\n" +
@@ -306,7 +308,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `main` (\n" +
-                                    "  `main_id` int(20) NOT NULL,\n" +
+                                    "  `main_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `main_name` varchar(255) NOT NULL,\n" +
                                     "  `group_id` int(20) NOT NULL,\n" +
                                     "  `state_id` int(20) NOT NULL,\n" +
@@ -322,20 +324,22 @@ class sql extends AsyncTask<String, Void, Boolean> {
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `users` (\n" +
-                                    "  `user_id` int(11) NOT NULL,\n" +
+                                    "  `user_id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                                     "  `user_name` varchar(20) NOT NULL,\n" +
+                                    "  `user_permission` int(3) NOT NULL,\n"+
                                     "  `user_comment` varchar(255) DEFAULT NULL,\n" +
                                     "PRIMARY KEY (`user_id`)\n"+
                                     ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `changes` (\n" +
-                            "  `change_id` int(20) NOT NULL,\n" +
+                            "  `change_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                             "  `main_id` int(20) NOT NULL,\n" +
                             "  `change_value` varchar(20) NOT NULL,\n" +
                             "  `change_old` varchar(255) NOT NULL,\n" +
                             "  `change_new` varchar(255) NOT NULL,\n" +
                             "  `change_reason` varchar(255) NOT NULL,\n" +
+                            "  `change_time` datetime NOT NULL,\n"+
                             "  `user_id` int(20) NOT NULL,\n" +
                             "PRIMARY KEY (`change_id`),\n"+
                             "FOREIGN KEY (main_id) REFERENCES main(main_id),\n"+
@@ -346,16 +350,16 @@ class sql extends AsyncTask<String, Void, Boolean> {
                             "CREATE TABLE `config` (\n" +
                             "  `config_sversion` varchar(20) NOT NULL,\n" +
                             "  `config_cversion` varchar(20) NOT NULL,\n" +
-                            "  `config_created` date NOT NULL,\n" +
-                            "  `config_lastUpdate` date NOT NULL,\n" +
-                            "  `config_imgversion` date NOT NULL,\n" +
+                            "  `config_created` datetime NOT NULL,\n" +
+                            "  `config_lastUpdate` datetime NOT NULL,\n" +
+                            "  `config_imgversion` datetime NOT NULL,\n" +
                             "  `config_ip` varchar(50) NOT NULL,\n" +
                             "PRIMARY KEY (`config_lastUpdate`)\n"+
                             ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                     stmt.execute();
                     stmt=conn.prepareStatement(
                             "CREATE TABLE `messages` (\n" +
-                            "  `message_id` int(20) NOT NULL,\n" +
+                            "  `message_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                             "  `message_to` int(20) NOT NULL,\n" +
                             "  `message_from` int(20) NOT NULL,\n" +
                             "  `message_text` varchar(255) NOT NULL,\n" +
@@ -365,8 +369,15 @@ class sql extends AsyncTask<String, Void, Boolean> {
                             "FOREIGN KEY (`message_from`) REFERENCES users(user_id)\n"+
                             ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                     stmt.execute();
-                    stmt=conn.prepareStatement("");
+                    stmt=conn.prepareStatement("INSERT INTO users (user_name,user_permission,user_comment) VALUES ('"+USER+"',4,'server creator')");
                     stmt.execute();
+                    java.util.Date date=new Date();
+                    stmt=conn.prepareStatement("INSERT INTO config (config_sversion,config_cversion,config_created,config_lastUpdate,config_imgversion,config_ip) VALUES ('1.0.0','1.0.0',?,?,?,'1.1.1.1')");
+                    stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
+                    stmt.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
+                    stmt.setTimestamp(3, new java.sql.Timestamp(date.getTime()));
+                    stmt.execute();
+                    System.out.println(new java.sql.Timestamp(date.getTime()));
                     return true;
                 }catch(Exception e){
                     e.printStackTrace();
