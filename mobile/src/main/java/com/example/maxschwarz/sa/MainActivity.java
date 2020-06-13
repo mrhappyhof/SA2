@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     return InsertFragment.newInstance();
                 case 3:
-                    return UsersFragment.newInstance(null,null,null);
+                    return UsersFragment.newInstance();
                 default:
                     return PlaceholderFragment.newInstance(position+1);
             }

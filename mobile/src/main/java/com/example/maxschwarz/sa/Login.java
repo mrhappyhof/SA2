@@ -59,7 +59,7 @@ public class Login extends AppCompatActivity {
         DBURL="jdbc:mysql://"+txt_dburl.getText().toString()+"/"+txt_db.getText().toString()+"?autoReconnect=true&useUnicode=true&characterEncoding=utf8";
         USER=txt_user.getText().toString();
         PASS=txt_pass.getText().toString();
-        s=new sql(this).execute(DBURL,USER,PASS);
+        s=new sql(this).execute(DBURL,USER,PASS,getResources().getString(R.string.cversion),getResources().getString(R.string.sversion));
     }
     public void Connect(boolean state,String db_url,String user,String pass,int perm){
         if(state==true) {
@@ -68,10 +68,10 @@ public class Login extends AppCompatActivity {
             intent.putExtra("mPerm",perm);
             if(chkbx.isChecked()){
                 prefsEditor.putBoolean("savedLogin",true);
-               prefsEditor.putString("savedDB_URL",txt_dburl.getText().toString());
-               prefsEditor.putString("savedDB",txt_db.getText().toString());
-               prefsEditor.putString("savedUSER",txt_user.getText().toString());
-               prefsEditor.putString("savedPASS",txt_pass.getText().toString());
+                prefsEditor.putString("savedDB_URL",txt_dburl.getText().toString());
+                prefsEditor.putString("savedDB",txt_db.getText().toString());
+                prefsEditor.putString("savedUSER",txt_user.getText().toString());
+                prefsEditor.putString("savedPASS",txt_pass.getText().toString());
             }else{
                 prefsEditor.putBoolean("savedLogin",false);
                 prefsEditor.putString("savedDB_URL","");
@@ -113,7 +113,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
     private String DB_URL;
     private String USER;
     private String PASS;
-   ConditionVariable mCondition = new ConditionVariable(true);
+    ConditionVariable mCondition = new ConditionVariable(true);
     private boolean setupWanted=false;
     int permission=-1;
     protected sql(Login x){
@@ -154,48 +154,38 @@ class sql extends AsyncTask<String, Void, Boolean> {
 
             if(rs.next()){
                 System.out.println("already setup");
-                rs = meta.getTables(null, null, "users",
-                        null);
-                if(rs.next()){
-                    System.out.println("users");
-                        rs = meta.getTables(null, null, "material",
-                                null);
-                    if(rs.next()){
-                        System.out.println("material");
-                        stmt=conn.prepareStatement("Select version From material");
-                        rs=stmt.executeQuery();
-                        rs.next();
-                        boolean success=false;
-                        String version=m.getString(R.string.version);
-                        if(rs.getString("version").equals(version)){
-                            success=true;
-                         }else{
-                            if(update(version)){
-                                success=true;
-                            }
-                        }
-                        if(success){
-                            System.out.println("version");
-                        stmt=conn.prepareStatement("Select perm From users where user='"+USER+"';");
-                        rs=stmt.executeQuery();
-                         if(rs.next()){
-                        if(rs.getInt("perm")!=0){
-                            permission=rs.getInt("perm");
-                            return true;
-                        }else{
-                            //Exception("ErrorComunication");
-                            return false;
-                        }
-                         }else {
-                             //Exception("User not existing");
-                             return false;
-                         }
-                        }
+                stmt=conn.prepareStatement("Select config_cversion,config_sversion,config_lastUpdate From config ORDER BY config_lastUpdate LIMIT 1");
+                rs=stmt.executeQuery();
+                rs.next();
+                boolean success=false;
+                String sversion=server_loginData[4];
+                String cversion=server_loginData[3];
+                if(rs.getString("config_sversion").equals(sversion)){
+                    if(rs.getString("config_cversion").equals(cversion)){
+                        success=true;
                     }else{
-                        defective();
+                        System.out.println("Client outdated");
                     }
                 }else{
-                    defective();
+                    if(update(sversion)){
+                        if(rs.getString("config_cversion").equals(cversion)){
+                            success=true;
+                        }else{
+                            System.out.println("Client Outdated");
+                        }
+                    }
+                }
+                if(success){
+                    System.out.println("version correct");
+                    stmt=conn.prepareStatement("Select user_permission From users where user_name='"+USER+"';");
+                    rs=stmt.executeQuery();
+                    if(rs.next()){
+                            permission=rs.getInt("user_permission");
+                            return true;
+                    }else {
+                        //Exception("User not configured");
+                        return false;
+                    }
                 }
             }else{
                 unConfigured();
@@ -224,9 +214,9 @@ class sql extends AsyncTask<String, Void, Boolean> {
     }
 
     private boolean unConfigured(){
-            PreparedStatement stmt=null;
-            Connection conn=null;
-            m.runOnUiThread(new Runnable() {
+        PreparedStatement stmt=null;
+        Connection conn=null;
+        m.runOnUiThread(new Runnable() {
             public void run() {
                 dialog=new Dialog(m);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -250,152 +240,149 @@ class sql extends AsyncTask<String, Void, Boolean> {
                 });
                 dialog.show();
             }
-            });
+        });
 
+        try {
+            synchronized (this){
+                wait();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(setupWanted){
             try {
-                synchronized (this){
-                    wait();
-                }
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `imgsources` (\n" +
+                                "  `imgsource_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `imgsource_source` varchar(255) NOT NULL,\n" +
+                                "  `imgsource_type` varchar(5) NOT NULL,\n" +
+                                "  `imgsource_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`imgsource_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `imgs` (\n" +
+                                "  `img_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `img_name` varchar(255) NOT NULL,\n" +
+                                "  `imgsource_id` int(20) NOT NULL,\n" +
+                                "  `img_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`img_id`),\n"+
+                                "FOREIGN KEY (`imgsource_id`) REFERENCES imgsources(`imgsource_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1\n");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `groups` (\n" +
+                                "  `group_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `group_name` varchar(255) NOT NULL,\n" +
+                                "  `group_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`group_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `places` (\n" +
+                                "  `place_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `place_addresse` varchar(255) NOT NULL,\n" +
+                                "  `place_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`place_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `states` (\n" +
+                                "  `state_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `state_name` varchar(255) NOT NULL,\n" +
+                                "  `todo_id` int(20) NOT NULL,\n" +
+                                "  `state_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`state_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `main` (\n" +
+                                "  `main_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `main_name` varchar(255) NOT NULL,\n" +
+                                "  `group_id` int(20) NOT NULL,\n" +
+                                "  `state_id` int(20) NOT NULL,\n" +
+                                "  `place_id` int(20) NOT NULL,\n" +
+                                "  `main_comment` varchar(255) NOT NULL,\n" +
+                                "  `img_id` int(20) NOT NULL,\n" +
+                                "PRIMARY KEY (`main_id`),\n"+
+                                "FOREIGN KEY (`img_id`) REFERENCES imgs(`img_id`),\n"+
+                                "FOREIGN KEY (`group_id`) REFERENCES groups(`group_id`),\n"+
+                                "FOREIGN KEY (`place_id`) REFERENCES places(`place_id`),\n"+
+                                "FOREIGN KEY (`state_id`) REFERENCES states(`state_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `users` (\n" +
+                                "  `user_id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `user_name` varchar(20) NOT NULL,\n" +
+                                "  `user_permission` int(3) NOT NULL,\n"+
+                                "  `user_comment` varchar(255) DEFAULT NULL,\n" +
+                                "PRIMARY KEY (`user_id`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `changes` (\n" +
+                                "  `change_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `main_id` int(20) NOT NULL,\n" +
+                                "  `change_value` varchar(20) NOT NULL,\n" +
+                                "  `change_old` varchar(255) NOT NULL,\n" +
+                                "  `change_new` varchar(255) NOT NULL,\n" +
+                                "  `change_reason` varchar(255) NOT NULL,\n" +
+                                "  `change_time` datetime NOT NULL,\n"+
+                                "  `user_id` int(20) NOT NULL,\n" +
+                                "PRIMARY KEY (`change_id`),\n"+
+                                "FOREIGN KEY (main_id) REFERENCES main(main_id),\n"+
+                                "FOREIGN KEY (user_id) REFERENCES users(user_id)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `config` (\n" +
+                                "  `config_sversion` varchar(20) NOT NULL,\n" +
+                                "  `config_cversion` varchar(20) NOT NULL,\n" +
+                                "  `config_created` datetime NOT NULL,\n" +
+                                "  `config_lastUpdate` datetime NOT NULL,\n" +
+                                "  `config_imgversion` datetime NOT NULL,\n" +
+                                "  `config_ip` varchar(50) NOT NULL,\n" +
+                                "PRIMARY KEY (`config_lastUpdate`)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement(
+                        "CREATE TABLE `messages` (\n" +
+                                "  `message_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
+                                "  `message_to` int(20) NOT NULL,\n" +
+                                "  `message_from` int(20) NOT NULL,\n" +
+                                "  `message_text` varchar(255) NOT NULL,\n" +
+                                "  `message_read` tinyint(1) NOT NULL,\n" +
+                                "PRIMARY KEY (`message_id`),\n"+
+                                "FOREIGN KEY (`message_to`) REFERENCES users(user_id),\n"+
+                                "FOREIGN KEY (`message_from`) REFERENCES users(user_id)\n"+
+                                ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
+                stmt.execute();
+                stmt=conn.prepareStatement("INSERT INTO users (user_name,user_permission,user_comment) VALUES ('"+USER+"',4,'server creator')");
+                stmt.execute();
+                java.util.Date date=new Date();
+                stmt=conn.prepareStatement("INSERT INTO config (config_sversion,config_cversion,config_created,config_lastUpdate,config_imgversion,config_ip) VALUES ('1.0.0','1.0.0',?,?,?,'1.1.1.1')");
+                stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
+                stmt.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
+                stmt.setTimestamp(3, new java.sql.Timestamp(date.getTime()));
+                stmt.execute();
+                System.out.println(new java.sql.Timestamp(date.getTime()));
+                return true;
             }catch(Exception e){
                 e.printStackTrace();
+                return false;
             }
-            if(setupWanted){
+            finally {
                 try {
-                    conn = DriverManager.getConnection(DB_URL, USER, PASS);
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `imgsources` (\n" +
-                                    "  `imgsource_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `imgsource_source` varchar(255) NOT NULL,\n" +
-                                    "  `imgsource_type` varchar(5) NOT NULL,\n" +
-                                    "  `imgsource_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`imgsource_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `imgs` (\n" +
-                                    "  `img_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `img_name` varchar(255) NOT NULL,\n" +
-                                    "  `imgsource_id` int(20) NOT NULL,\n" +
-                                    "  `img_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`img_id`),\n"+
-                                    "FOREIGN KEY (`imgsource_id`) REFERENCES imgsources(`imgsource_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1\n");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `groups` (\n" +
-                                    "  `group_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `group_name` varchar(255) NOT NULL,\n" +
-                                    "  `group_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`group_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `places` (\n" +
-                                    "  `place_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `place_addresse` varchar(255) NOT NULL,\n" +
-                                    "  `place_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`place_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `states` (\n" +
-                                    "  `state_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `state_name` varchar(255) NOT NULL,\n" +
-                                    "  `todo_id` int(20) NOT NULL,\n" +
-                                    "  `state_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`state_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `main` (\n" +
-                                    "  `main_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `main_name` varchar(255) NOT NULL,\n" +
-                                    "  `group_id` int(20) NOT NULL,\n" +
-                                    "  `state_id` int(20) NOT NULL,\n" +
-                                    "  `place_id` int(20) NOT NULL,\n" +
-                                    "  `main_comment` varchar(255) NOT NULL,\n" +
-                                    "  `img_id` int(20) NOT NULL,\n" +
-                                    "PRIMARY KEY (`main_id`),\n"+
-                                    "FOREIGN KEY (`img_id`) REFERENCES imgs(`img_id`),\n"+
-                                    "FOREIGN KEY (`group_id`) REFERENCES groups(`group_id`),\n"+
-                                    "FOREIGN KEY (`place_id`) REFERENCES places(`place_id`),\n"+
-                                    "FOREIGN KEY (`state_id`) REFERENCES states(`state_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `users` (\n" +
-                                    "  `user_id` int(11) NOT NULL AUTO_INCREMENT,\n" +
-                                    "  `user_name` varchar(20) NOT NULL,\n" +
-                                    "  `user_permission` int(3) NOT NULL,\n"+
-                                    "  `user_comment` varchar(255) DEFAULT NULL,\n" +
-                                    "PRIMARY KEY (`user_id`)\n"+
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `changes` (\n" +
-                            "  `change_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                            "  `main_id` int(20) NOT NULL,\n" +
-                            "  `change_value` varchar(20) NOT NULL,\n" +
-                            "  `change_old` varchar(255) NOT NULL,\n" +
-                            "  `change_new` varchar(255) NOT NULL,\n" +
-                            "  `change_reason` varchar(255) NOT NULL,\n" +
-                            "  `change_time` datetime NOT NULL,\n"+
-                            "  `user_id` int(20) NOT NULL,\n" +
-                            "PRIMARY KEY (`change_id`),\n"+
-                            "FOREIGN KEY (main_id) REFERENCES main(main_id),\n"+
-                            "FOREIGN KEY (user_id) REFERENCES users(user_id)\n"+
-                            ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `config` (\n" +
-                            "  `config_sversion` varchar(20) NOT NULL,\n" +
-                            "  `config_cversion` varchar(20) NOT NULL,\n" +
-                            "  `config_created` datetime NOT NULL,\n" +
-                            "  `config_lastUpdate` datetime NOT NULL,\n" +
-                            "  `config_imgversion` datetime NOT NULL,\n" +
-                            "  `config_ip` varchar(50) NOT NULL,\n" +
-                            "PRIMARY KEY (`config_lastUpdate`)\n"+
-                            ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement(
-                            "CREATE TABLE `messages` (\n" +
-                            "  `message_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                            "  `message_to` int(20) NOT NULL,\n" +
-                            "  `message_from` int(20) NOT NULL,\n" +
-                            "  `message_text` varchar(255) NOT NULL,\n" +
-                            "  `message_read` tinyint(1) NOT NULL,\n" +
-                            "PRIMARY KEY (`message_id`),\n"+
-                            "FOREIGN KEY (`message_to`) REFERENCES users(user_id),\n"+
-                            "FOREIGN KEY (`message_from`) REFERENCES users(user_id)\n"+
-                            ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
-                    stmt.execute();
-                    stmt=conn.prepareStatement("INSERT INTO users (user_name,user_permission,user_comment) VALUES ('"+USER+"',4,'server creator')");
-                    stmt.execute();
-                    java.util.Date date=new Date();
-                    stmt=conn.prepareStatement("INSERT INTO config (config_sversion,config_cversion,config_created,config_lastUpdate,config_imgversion,config_ip) VALUES ('1.0.0','1.0.0',?,?,?,'1.1.1.1')");
-                    stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
-                    stmt.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
-                    stmt.setTimestamp(3, new java.sql.Timestamp(date.getTime()));
-                    stmt.execute();
-                    System.out.println(new java.sql.Timestamp(date.getTime()));
-                    return true;
+                    stmt.close();
+                    conn.close();
                 }catch(Exception e){
-                    e.printStackTrace();
-                    return false;
-                }
-                finally {
-                    try {
-                        stmt.close();
-                        conn.close();
-                    }catch(Exception e){
 
-                    }
                 }
             }
-            return false;
-    }
-    private void defective(){
-        //Repair -table
+        }
+        return false;
     }
     synchronized void unlock(){
         mCondition.open();

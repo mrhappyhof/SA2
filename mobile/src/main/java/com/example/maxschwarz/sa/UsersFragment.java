@@ -32,7 +32,7 @@ public class UsersFragment extends Fragment {
     }
 
 
-    public static UsersFragment newInstance(String url, String user, String pass) {
+    public static UsersFragment newInstance() {
         UsersFragment fragment = new UsersFragment();
         return fragment;
     }

@@ -40,7 +40,8 @@
     <string name="delete">Delete</string>
     <string name="Rent">Rent</string>
     <string name="close">Close</string>
-    <string name="version" translatable="false">1.0.0</string>
+    <string name="sversion" translatable="false">1.0.0</string>
     <string name="SetUpText">The server is not yet setup. Do you want to set it up with the current user as the administrator?</string>
+    <string name="cversion" translatable="false">1.0.0</string>
 
 </resources>
