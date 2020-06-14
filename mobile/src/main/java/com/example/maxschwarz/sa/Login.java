@@ -265,7 +265,7 @@ class sql extends AsyncTask<String, Void, Boolean> {
                         "CREATE TABLE `imgs` (\n" +
                                 "  `img_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                 "  `img_name` varchar(255) NOT NULL,\n" +
-                                "  `imgsource_id` int(20) NOT NULL,\n" +
+                                "  `imgsource_id` int(20) NOT NULL DEFAULT 1,\n" +
                                 "  `img_comment` varchar(255) DEFAULT NULL,\n" +
                                 "PRIMARY KEY (`img_id`),\n"+
                                 "FOREIGN KEY (`imgsource_id`) REFERENCES imgsources(`imgsource_id`)\n"+
@@ -276,24 +276,25 @@ class sql extends AsyncTask<String, Void, Boolean> {
                                 "  `group_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                 "  `group_name` varchar(255) NOT NULL,\n" +
                                 "  `group_comment` varchar(255) DEFAULT NULL,\n" +
-                                "PRIMARY KEY (`group_id`)\n"+
+                                "PRIMARY KEY (`group_id`,`group_name`)\n"+
                                 ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                 stmt.execute();
                 stmt=conn.prepareStatement(
                         "CREATE TABLE `places` (\n" +
                                 "  `place_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
-                                "  `place_addresse` varchar(255) NOT NULL,\n" +
+                                "  `place_name` varchar(255) NOT NULL,\n" +
+                                "  `place_address` varchar(255) NOT NULL,\n" +
                                 "  `place_comment` varchar(255) DEFAULT NULL,\n" +
-                                "PRIMARY KEY (`place_id`)\n"+
+                                "PRIMARY KEY (`place_id`,`place_name`)\n"+
                                 ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                 stmt.execute();
                 stmt=conn.prepareStatement(
                         "CREATE TABLE `states` (\n" +
                                 "  `state_id` int(20) NOT NULL AUTO_INCREMENT,\n" +
                                 "  `state_name` varchar(255) NOT NULL,\n" +
-                                "  `todo_id` int(20) NOT NULL,\n" +
+                                "  `state_todoid` int(20) DEFAULT NULL,\n" +
                                 "  `state_comment` varchar(255) DEFAULT NULL,\n" +
-                                "PRIMARY KEY (`state_id`)\n"+
+                                "PRIMARY KEY (`state_id`,`state_name`)\n"+
                                 ") ENGINE=InnoDB DEFAULT CHARSET=latin1");
                 stmt.execute();
                 stmt=conn.prepareStatement(
@@ -303,8 +304,8 @@ class sql extends AsyncTask<String, Void, Boolean> {
                                 "  `group_id` int(20) NOT NULL,\n" +
                                 "  `state_id` int(20) NOT NULL,\n" +
                                 "  `place_id` int(20) NOT NULL,\n" +
-                                "  `main_comment` varchar(255) NOT NULL,\n" +
-                                "  `img_id` int(20) NOT NULL,\n" +
+                                "  `main_comment` varchar(255),\n" +
+                                "  `img_id` int(20),\n" +
                                 "PRIMARY KEY (`main_id`),\n"+
                                 "FOREIGN KEY (`img_id`) REFERENCES imgs(`img_id`),\n"+
                                 "FOREIGN KEY (`group_id`) REFERENCES groups(`group_id`),\n"+
@@ -366,6 +367,8 @@ class sql extends AsyncTask<String, Void, Boolean> {
                 stmt.setTimestamp(1, new java.sql.Timestamp(date.getTime()));
                 stmt.setTimestamp(2, new java.sql.Timestamp(date.getTime()));
                 stmt.setTimestamp(3, new java.sql.Timestamp(date.getTime()));
+                stmt.execute();
+                stmt=conn.prepareStatement("INSERT INTO imgsources (imgsource_id,imgsource_source,imgsource_type,imgsource_comment) VALUES ('1','localhost','zip','integrated images')");
                 stmt.execute();
                 System.out.println(new java.sql.Timestamp(date.getTime()));
                 return true;

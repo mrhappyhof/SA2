@@ -39,4 +39,6 @@
     <string name="close">Schließen</string>
     <string name="SelectAnOption">Bitte wählen sie eine Möglichkeit</string>
     <string name="SetUpText">Der Server ist noch nicht eingerichtet. Wollen sie ihn mit dem aktuellen Nutzer als Administartor einrichten?</string>
+    <string name="address">Adresse</string>
+    <string name="ErrorInsertNull">Die folgenden Felder dürfen nicht leer sein</string>
 </resources>

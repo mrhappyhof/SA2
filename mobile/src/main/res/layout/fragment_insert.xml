@@ -8,7 +8,6 @@
     tools:context=".InsertFragment">
 
 
-
     <EditText
         android:id="@+id/i_ip_name"
         android:layout_width="wrap_content"
@@ -18,9 +17,10 @@
         android:layout_marginTop="11dp"
         android:ems="10"
         android:hint="@string/name"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:autofillHints="" />
 
-    <EditText
+    <com.reginald.editspinner.EditSpinner
         android:id="@+id/i_ip_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,9 +28,10 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="@string/group"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        app:dropDownDrawable="@android:drawable/arrow_down_float" />
 
-    <EditText
+    <com.reginald.editspinner.EditSpinner
         android:id="@+id/i_ip_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,17 +39,32 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="@string/place"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        app:dropDownDrawable="@android:drawable/arrow_down_float"/>
 
     <EditText
-        android:id="@+id/i_ip_state"
+        android:id="@+id/i_ip_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/i_ip_place"
         android:layout_centerHorizontal="true"
         android:ems="10"
+        android:hint="@string/address"
+        android:inputType="textPersonName"
+        android:autofillHints="" />
+
+    <com.reginald.editspinner.EditSpinner
+        android:id="@+id/i_ip_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/i_ip_address"
+        android:layout_centerHorizontal="true"
+        android:ems="10"
         android:hint="@string/state"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        app:dropDownDrawable="@android:drawable/arrow_down_float"/>
+
+
 
     <EditText
         android:id="@+id/i_ip_comment"
@@ -58,7 +74,8 @@
         android:layout_centerHorizontal="true"
         android:ems="10"
         android:hint="@string/comment"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:importantForAutofill="no" />
 
     <EditText
         android:id="@+id/i_ip_img"
@@ -68,7 +85,8 @@
         android:layout_below="@+id/i_ip_comment"
         android:ems="10"
         android:hint="@string/img"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:importantForAutofill="no" />
 
     <Button
         android:id="@+id/i_btn_camera"
@@ -82,9 +100,8 @@
         android:id="@+id/i_btn_insert"
         android:layout_width="216dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/i_ip_img"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="116dp"
         android:onClick="btnInsert"
         android:text="@string/tab_insert" />
 
